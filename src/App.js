@@ -22,6 +22,8 @@ const particlesOptions = {
   }
 }
 
+
+
 const app = new Clarifai.App({
  apiKey: '86de0b2e991f4c23abae54f7fe6e1a01'
 });
@@ -36,6 +38,12 @@ class App extends Component {
       route: 'signin',
       isSignedIn:false
     }
+  }
+
+  componentDidMount(){
+    fetch('http://localhost:8080/')
+    .then(response => response.json())
+    .then(console.log)
   }
 
   calculateFaceLocation = (data) =>{
@@ -65,9 +73,23 @@ class App extends Component {
     .predict(
       Clarifai.FACE_DETECT_MODEL,
         this.state.input)
-        .then(response => this.displayFaceBox(this.calculateFaceLocation(response)))
+        .then(response =>{
+          if(response){
+          fetch('http://localhost:3000/image')
+            fetch('http://localhost:8080/signin',{
+              method: 'put',
+              headers: {'content-type':'application/json'},
+              body:JSON.stringify({
+                email: this.state.signInEmail,
+                password: this.state.signInPassword
+            })
+          })
+        }
+          this.displayFaceBox(this.calculateFaceLocation(response))
+      })
         .catch(err => console.log('error'));
   }
+
    onRouteChange = (route) => {
      if(route === 'signout'){
        this.setState({isSignedIn: false})
